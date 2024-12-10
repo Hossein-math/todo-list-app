@@ -21,12 +21,38 @@
     </thead>
     <tbody>
       <tr *ngFor="let task of filteredTasks">
-        <td class="p-2 border">{{ task.title }}</td>
-        <td class="p-2 border">{{ task.description }}</td>
-        <td class="p-2 border">
-          <input type="checkbox" [(ngModel)]="task.done" (change)="updateTaskStatus(task)" />
+        <td class="p-2 border text-center align-middle">
+          <ng-container *ngIf="editingTask?.title != task.title; else editTitle">
+            {{ task.title }}
+          </ng-container>
+          <ng-template #editTitle>
+            <input [value]="editingTask?.title" (input)="onTitleChange($event, task)" class="p-1 border rounded" />
+          </ng-template>
         </td>
-        <td class="p-2 border">
+
+        <td class="p-2 border text-center align-middle">
+          <ng-container *ngIf="editingTask?.description != task.description; else editDescription">
+            {{ task.description }}
+          </ng-container>
+          <ng-template #editDescription>
+            <input [value]="editingTask?.description" (input)="onDescriptionChange($event, task)" class="p-1 border rounded" />
+          </ng-template>
+        </td>
+
+        <td class="p-2 border text-center align-middle">
+          <input type="checkbox" [checked]="task.done" [(ngModel)]="task.done" (change)="updateTaskStatus(task)" />
+        </td>
+
+        <td class="p-2 border text-center align-middle">
+          <ng-container *ngIf="editingTask?.title !== task.title">
+            <i class="fa-solid fa-pen-to-square m-5" (click)="startEditing(task)"></i>
+            <i class="fa-solid fa-trash fa-lg" (click)="deleteTask(task)"></i>
+          </ng-container>
+
+          <ng-container *ngIf="editingTask?.title === task.title">
+            <i class="fa-solid fa-save m-5" (click)="saveTask()"></i>
+            <i class="fa-solid fa-times fa-lg" (click)="cancelEditing()"></i>
+          </ng-container>
         </td>
       </tr>
     </tbody>
